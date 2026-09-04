@@ -1,0 +1,422 @@
+/*
+ * Transcript comparison lab.
+ *
+ * Every selector is scoped under `.transcript-lab` so this file cannot affect
+ * the inherited V4 interface. Colours reuse the existing dark palette.
+ */
+
+.transcript-lab {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.transcript-lab .empty-mini {
+  padding: 14px;
+  border: 1px dashed rgba(148, 163, 184, 0.25);
+  border-radius: 10px;
+  color: rgba(148, 163, 184, 0.9);
+  font-size: 0.8rem;
+}
+
+/* --- provenance and warnings -------------------------------------------- */
+
+.lab-provenance {
+  padding: 12px 14px;
+  border-left: 3px solid rgba(56, 189, 248, 0.7);
+  border-radius: 0 10px 10px 0;
+  background: rgba(8, 47, 73, 0.35);
+}
+
+.lab-provenance b {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.lab-provenance ul {
+  margin: 0;
+  padding-left: 18px;
+  color: rgba(203, 213, 225, 0.92);
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+.lab-datause {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  border-radius: 10px;
+  background: rgba(66, 52, 6, 0.35);
+  color: #fde68a;
+  font-size: 0.76rem;
+  line-height: 1.55;
+}
+
+.lab-datause a {
+  color: #fde68a;
+}
+
+.lab-config-error,
+.lab-notice-error {
+  padding: 10px 12px;
+  border: 1px solid rgba(248, 113, 113, 0.45);
+  border-radius: 10px;
+  background: rgba(69, 10, 10, 0.35);
+  color: #fecaca;
+  font-size: 0.78rem;
+}
+
+.lab-notice {
+  margin: 0;
+  color: rgba(148, 163, 184, 0.95);
+  font-size: 0.78rem;
+}
+
+.lab-notices {
+  display: grid;
+  gap: 6px;
+}
+
+.lab-warning,
+.lab-disabled-reason {
+  color: #fcd34d;
+  font-size: 0.74rem;
+  font-style: normal;
+}
+
+/* --- controls ------------------------------------------------------------ */
+
+.lab-controls,
+.lab-exports {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 0.78rem;
+}
+
+.lab-file input[type="file"] {
+  display: none;
+}
+
+.lab-file span,
+.lab-button {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  border-radius: 999px;
+  background: transparent;
+  color: #7dd3fc;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+}
+
+.lab-file span:hover,
+.lab-button:hover:not(:disabled) {
+  background: rgba(8, 47, 73, 0.6);
+}
+
+.lab-button.primary {
+  border-color: rgba(34, 197, 94, 0.6);
+  color: #86efac;
+}
+
+.lab-button:disabled {
+  cursor: not-allowed;
+  border-color: rgba(148, 163, 184, 0.25);
+  color: rgba(148, 163, 184, 0.6);
+}
+
+.lab-link-button {
+  border: 0;
+  background: none;
+  color: rgba(148, 163, 184, 0.9);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.74rem;
+  text-decoration: underline;
+}
+
+/* --- clips --------------------------------------------------------------- */
+
+.lab-clips {
+  display: grid;
+  gap: 10px;
+}
+
+.lab-clip {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 12px;
+  background: rgba(30, 41, 59, 0.4);
+}
+
+.lab-clip-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lab-clip-head b {
+  overflow-wrap: anywhere;
+}
+
+.lab-clip-facts {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  color: rgba(148, 163, 184, 0.9);
+  font-size: 0.73rem;
+}
+
+.lab-hash {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.lab-clip-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* --- runs ---------------------------------------------------------------- */
+
+.lab-runs {
+  display: grid;
+  gap: 14px;
+}
+
+.lab-run {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  background: rgba(2, 6, 23, 0.45);
+}
+
+.lab-run.plan {
+  border-style: dashed;
+}
+
+.lab-run-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.lab-run-counts {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  color: rgba(148, 163, 184, 0.9);
+  font-size: 0.73rem;
+}
+
+.lab-plan-lane pre {
+  overflow-x: auto;
+  margin: 4px 0 10px;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.8);
+  color: #bae6fd;
+  font-size: 0.72rem;
+}
+
+/* --- lanes side by side --------------------------------------------------- */
+
+.lab-lanes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.lab-lane {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.lab-lane header small {
+  display: block;
+  margin-top: 2px;
+  color: rgba(148, 163, 184, 0.9);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.lab-lane-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  color: rgba(148, 163, 184, 0.85);
+  font-size: 0.7rem;
+}
+
+.lab-lane-errors {
+  display: grid;
+  gap: 2px;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(69, 10, 10, 0.3);
+  color: #fecaca;
+  font-size: 0.7rem;
+}
+
+.lab-segments {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lab-segment {
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  border-left: 2px solid rgba(148, 163, 184, 0.25);
+  border-radius: 0 8px 8px 0;
+  background: rgba(30, 41, 59, 0.45);
+}
+
+.lab-segment.finalized { border-left-color: rgba(34, 197, 94, 0.7); }
+.lab-segment.provisional { border-left-color: rgba(250, 204, 21, 0.7); }
+.lab-segment.timed_out,
+.lab-segment.unavailable { border-left-color: rgba(248, 113, 113, 0.75); }
+.lab-segment.cancelled { border-left-color: rgba(148, 163, 184, 0.6); }
+.lab-segment.late { outline: 1px dashed rgba(250, 204, 21, 0.4); }
+
+.lab-segment-head {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.lab-segment-text {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  /* Transcript text is untrusted content rendered as escaped text. */
+  white-space: pre-wrap;
+}
+
+.lab-segment-note {
+  color: #fca5a5;
+  font-size: 0.7rem;
+}
+
+.lab-chip {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(71, 85, 105, 0.55);
+  color: #e2e8f0;
+  font-size: 0.66rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.lab-chip.finalized,
+.lab-chip.complete { background: rgba(22, 101, 52, 0.55); color: #bbf7d0; }
+.lab-chip.provisional,
+.lab-chip.listening { background: rgba(113, 88, 6, 0.6); color: #fde68a; }
+.lab-chip.timed_out,
+.lab-chip.unavailable,
+.lab-chip.degraded { background: rgba(127, 29, 29, 0.6); color: #fecaca; }
+.lab-chip.late,
+.lab-chip.gap { background: rgba(120, 53, 15, 0.6); color: #fed7aa; }
+.lab-chip.quiet { background: rgba(51, 65, 85, 0.6); color: #cbd5e1; }
+.lab-chip.provider { background: rgba(7, 89, 133, 0.6); color: #bae6fd; }
+
+/* --- reviewer controls ---------------------------------------------------- */
+
+.lab-review {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(148, 163, 184, 0.18);
+}
+
+.lab-review label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: rgba(148, 163, 184, 0.9);
+  font-size: 0.7rem;
+}
+
+.lab-review select,
+.lab-review input[type="text"] {
+  padding: 4px 6px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.85);
+  color: inherit;
+  font: inherit;
+  font-size: 0.72rem;
+}
+
+.lab-review input[type="text"] {
+  flex: 1 1 160px;
+  min-width: 120px;
+}
+
+/* --- comparison ----------------------------------------------------------- */
+
+.lab-comparison {
+  padding: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.lab-diff {
+  overflow-wrap: anywhere;
+  margin: 6px 0;
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+
+.lab-diff-removed {
+  padding: 0 3px;
+  border-radius: 4px;
+  background: rgba(127, 29, 29, 0.45);
+  color: #fecaca;
+  text-decoration: line-through;
+}
+
+.lab-diff-added {
+  padding: 0 3px;
+  border-radius: 4px;
+  background: rgba(22, 101, 52, 0.45);
+  color: #bbf7d0;
+}
+
+.lab-diff-caption {
+  margin: 4px 0 0;
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .lab-lanes {
+    grid-template-columns: 1fr;
+  }
+}

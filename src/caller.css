@@ -1,0 +1,626 @@
+/*
+ * Caller screen — hackathon presentation layer.
+ *
+ * Everything is scoped under `.caller-shell` so it cannot leak into the
+ * billing-team view or the transcript lab. It reuses the existing tokens from
+ * styles.css (--bg, --panel, --line, --text, --muted, --blue, --green, --amber,
+ * --red, --violet) rather than introducing a second palette.
+ *
+ * TWO HARD CONSTRAINTS, NOT PREFERENCES
+ * -------------------------------------
+ * 1. Every animation here touches ONLY `transform` and `opacity`. Those are
+ *    compositor properties, so they never hit the main thread. That matters
+ *    because the audio scheduler runs on the main thread: main-thread jank
+ *    starves it, and a starved scheduler inserts silence mid-word, which is
+ *    audible. A CSS choice can genuinely damage the voice here.
+ * 2. `prefers-reduced-motion` stops all of it.
+ *
+ * READABILITY AT DISTANCE
+ * -----------------------
+ * Judges stand back from a screen. The numbers that carry the story — the call
+ * state, the plan price, the disputed amount — are sized to be read across a
+ * room, and nothing important is smaller than 0.8rem.
+ */
+
+.caller-shell {
+  --hero: #0b1930;
+  --ring: rgba(74, 184, 255, 0.35);
+  display: grid;
+  gap: 18px;
+}
+
+/* ---------------------------------------------------------------------------
+   Layout: the call is the hero, the account sits beside it
+   --------------------------------------------------------------------------- */
+
+.caller-shell .caller-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .caller-shell .caller-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.caller-shell .caller-stack {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   The call card
+   --------------------------------------------------------------------------- */
+
+.caller-shell .call-card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 20px;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background:
+    radial-gradient(120% 90% at 50% -20%, rgba(74, 184, 255, 0.16), transparent 62%),
+    var(--hero);
+}
+
+.caller-shell .call-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.caller-shell .call-label {
+  display: grid;
+  gap: 3px;
+}
+
+.caller-shell .call-label .eyebrow {
+  color: var(--muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+}
+
+.caller-shell .call-label b {
+  font-family: "Manrope", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+/* Live / idle pill */
+.caller-shell .call-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(7, 17, 31, 0.6);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.caller-shell .call-state i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.caller-shell .call-state.live {
+  border-color: rgba(76, 225, 170, 0.45);
+  color: var(--green);
+}
+
+.caller-shell .call-state.live i {
+  background: var(--green);
+  animation: caller-breathe 2s ease-in-out infinite;
+}
+
+/* --- the orb ------------------------------------------------------------- */
+
+.caller-shell .orb-wrap {
+  display: grid;
+  place-items: center;
+  padding: 6px 0 2px;
+}
+
+.caller-shell .orb {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 148px;
+  height: 148px;
+}
+
+.caller-shell .orb span {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--ring);
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.caller-shell .orb b {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background: linear-gradient(150deg, rgba(74, 184, 255, 0.9), rgba(140, 125, 255, 0.85));
+  box-shadow: 0 14px 40px rgba(74, 184, 255, 0.28);
+  color: #04101d;
+  font-size: 1.7rem;
+  font-style: normal;
+  /* Idle sits still. Motion is reserved for "we are listening". */
+  transform: scale(1);
+  transition: transform 0.35s ease;
+}
+
+.caller-shell .orb.live b {
+  animation: caller-pulse 2.4s ease-in-out infinite;
+}
+
+.caller-shell .orb.live span {
+  animation: caller-ripple 2.8s ease-out infinite;
+}
+
+.caller-shell .orb.live span:nth-of-type(2) { animation-delay: 0.9s; }
+.caller-shell .orb.live span:nth-of-type(3) { animation-delay: 1.8s; }
+
+@keyframes caller-pulse {
+  50% { transform: scale(1.045); }
+}
+
+@keyframes caller-ripple {
+  0%   { transform: scale(0.62); opacity: 0.55; }
+  100% { transform: scale(1);    opacity: 0; }
+}
+
+@keyframes caller-breathe {
+  50% { opacity: 0.35; }
+}
+
+/* --- headline + action --------------------------------------------------- */
+
+.caller-shell .call-copy {
+  display: grid;
+  gap: 8px;
+  text-align: center;
+  max-width: 46ch;
+  margin: 0 auto;
+}
+
+.caller-shell .call-copy h3 {
+  margin: 0;
+  font-family: "Manrope", sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.caller-shell .call-copy p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.caller-shell .call-actions {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.caller-shell .call-button {
+  min-width: 230px;
+  padding: 15px 30px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--blue), var(--violet));
+  color: #041020;
+  cursor: pointer;
+  font-family: "Manrope", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  box-shadow: 0 12px 30px rgba(74, 184, 255, 0.26);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
+}
+
+.caller-shell .call-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 38px rgba(74, 184, 255, 0.34);
+}
+
+.caller-shell .call-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.caller-shell .call-button:disabled {
+  cursor: progress;
+  opacity: 0.55;
+}
+
+.caller-shell .call-button.ending {
+  background: linear-gradient(135deg, #ff8fa3, var(--red));
+}
+
+.caller-shell .call-hint {
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+/* --- the live caption strip --------------------------------------------- */
+
+.caller-shell .call-caption {
+  display: grid;
+  gap: 4px;
+  padding: 13px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(7, 17, 31, 0.55);
+  min-height: 62px;
+}
+
+.caller-shell .call-caption span {
+  color: var(--muted);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.caller-shell .call-caption p {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+/* ---------------------------------------------------------------------------
+   Account panels
+   --------------------------------------------------------------------------- */
+
+.caller-shell .panel-card {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+}
+
+.caller-shell .card-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.caller-shell .card-title h3 {
+  margin: 0;
+  font-family: "Manrope", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.caller-shell .card-title small {
+  color: var(--muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Plan + price: the biggest number on the account side. */
+.caller-shell .plan-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.caller-shell .plan-row b {
+  font-family: "Manrope", sans-serif;
+  font-size: 1.45rem;
+  font-weight: 800;
+}
+
+.caller-shell .plan-row strong {
+  font-family: "Manrope", sans-serif;
+  font-size: 1.7rem;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.caller-shell .plan-row strong small {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.caller-shell .plan-desc {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.caller-shell .money-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.88rem;
+}
+
+.caller-shell .money-row b {
+  font-family: "Manrope", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* The disputed charge is the subject of the whole demo. Make it findable. */
+.caller-shell .dispute {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 15px;
+  border: 1px solid rgba(255, 190, 102, 0.4);
+  border-radius: 13px;
+  background: rgba(72, 52, 12, 0.34);
+}
+
+.caller-shell .dispute span {
+  color: var(--amber);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.caller-shell .dispute b {
+  font-family: "Manrope", sans-serif;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--amber);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------------
+   "What you actually heard" — the USP, presented as a feature not telemetry
+   --------------------------------------------------------------------------- */
+
+.caller-shell .heard-card {
+  border-color: rgba(74, 184, 255, 0.24);
+  background:
+    linear-gradient(180deg, rgba(74, 184, 255, 0.07), transparent 46%),
+    var(--panel);
+}
+
+.caller-shell .heard-state {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 14px;
+  border-radius: 13px;
+  background: rgba(7, 17, 31, 0.5);
+  border-left: 3px solid var(--muted);
+}
+
+.caller-shell .heard-state b {
+  font-family: "Manrope", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.caller-shell .heard-state small {
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.caller-shell .heard-state.speaking { border-left-color: var(--blue); }
+.caller-shell .heard-state.played,
+.caller-shell .heard-state.completed { border-left-color: var(--green); }
+.caller-shell .heard-state.interrupted { border-left-color: var(--amber); }
+.caller-shell .heard-state.resumed { border-left-color: var(--violet); }
+
+/* The delivered / cut-off bar: the visual proof of the heard-state split. */
+.caller-shell .heard-bar {
+  display: flex;
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 190, 102, 0.28);
+}
+
+.caller-shell .heard-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), var(--green));
+  transition: width 0.3s ease;
+}
+
+.caller-shell .heard-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.caller-shell .heard-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.caller-shell .heard-legend i {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+}
+
+.caller-shell .heard-legend .dot-heard { background: var(--green); }
+.caller-shell .heard-legend .dot-unheard { background: rgba(255, 190, 102, 0.7); }
+
+.caller-shell .heard-quote {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(7, 17, 31, 0.5);
+  font-size: 0.86rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.caller-shell .heard-unheard {
+  display: grid;
+  gap: 5px;
+  padding: 12px 14px;
+  border: 1px dashed rgba(255, 190, 102, 0.45);
+  border-radius: 12px;
+  background: rgba(72, 52, 12, 0.28);
+}
+
+.caller-shell .heard-unheard span {
+  color: var(--amber);
+  font-size: 0.63rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.caller-shell .heard-unheard p {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.caller-shell .heard-unheard small {
+  color: var(--muted);
+  font-size: 0.71rem;
+  line-height: 1.45;
+}
+
+.caller-shell .heard-counts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.caller-shell .heard-counts div {
+  display: grid;
+  gap: 2px;
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(7, 17, 31, 0.42);
+}
+
+.caller-shell .heard-counts b {
+  font-family: "Manrope", sans-serif;
+  font-size: 1.45rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.caller-shell .heard-counts small {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Requests on file
+   --------------------------------------------------------------------------- */
+
+.caller-shell .request-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.caller-shell .request-row:last-child { border-bottom: 0; }
+
+.caller-shell .request-row b {
+  font-size: 0.86rem;
+}
+
+.caller-shell .request-row small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.71rem;
+  text-transform: capitalize;
+}
+
+.caller-shell .request-row .amount {
+  font-family: "Manrope", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.caller-shell .status-tag {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(255, 190, 102, 0.2);
+  color: var(--amber);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.caller-shell .empty-note {
+  margin: 0;
+  padding: 15px;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+/* ---------------------------------------------------------------------------
+   Accessibility: stop every animation on request
+   --------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .caller-shell .orb.live b,
+  .caller-shell .orb.live span,
+  .caller-shell .call-state.live i {
+    animation: none;
+  }
+  .caller-shell .orb.live span { opacity: 0.22; }
+  .caller-shell .call-button,
+  .caller-shell .heard-bar i,
+  .caller-shell .orb b {
+    transition: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .caller-shell .call-card { padding: 20px; }
+  .caller-shell .call-copy h3 { font-size: 1.35rem; }
+  .caller-shell .call-button { min-width: 100%; }
+  .caller-shell .heard-counts { grid-template-columns: minmax(0, 1fr); }
+}

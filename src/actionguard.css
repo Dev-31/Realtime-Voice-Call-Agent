@@ -1,0 +1,124 @@
+/* HCR ActionGuard additions on top of the shared TwinForge theme. */
+
+:root { --danger: #ff718a; }
+
+.bad { color: var(--danger); }
+.footnote { grid-column: 1 / -1; font-size: 11px; margin: 0; }
+
+/* --- caller: live heard-state panel ------------------------------------- */
+.hcr-state {
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(76, 225, 170, .06);
+  border-color: rgba(76, 225, 170, .22);
+}
+.hcr-state b { font: 700 14px "Manrope"; }
+.hcr-state span { color: var(--muted); font-size: 11px; }
+.hcr-state.interrupted { background: rgba(255, 190, 102, .08); border-color: rgba(255, 190, 102, .28); }
+.hcr-state.planned { background: rgba(130, 150, 174, .07); border-color: var(--line); }
+.hcr-state.resumed { background: rgba(140, 125, 255, .09); border-color: rgba(140, 125, 255, .3); }
+
+.hcr-heard { color: #c2cfdd; font-size: 12px; line-height: 1.5; margin: 12px 0 0; }
+.hcr-unheard {
+  margin-top: 12px;
+  border: 1px dashed rgba(255, 113, 138, .38);
+  background: rgba(255, 113, 138, .07);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.hcr-unheard p { margin: 6px 0; color: #ffc4ce; font-size: 12px; line-height: 1.5; }
+.hcr-unheard small { color: var(--muted); font-size: 10px; }
+.hcr-counts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.hcr-counts div {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  background: rgba(7, 17, 31, .5);
+}
+.hcr-counts b { display: block; font: 800 20px "Manrope"; }
+.hcr-counts small { color: var(--muted); font-size: 10px; }
+
+/* --- billing team: stats -------------------------------------------------- */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.stat-card { padding: 18px 20px; display: grid; gap: 6px; }
+.stat-card small { color: var(--muted); font-size: 11px; }
+.stat-card b { font: 800 30px "Manrope"; letter-spacing: -1px; }
+.stat-card.good b { color: var(--green); }
+
+/* --- billing team: report table ------------------------------------------ */
+.report-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 12px; }
+.report-table th {
+  text-align: left;
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 800;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.report-table td { padding: 13px 12px; border-bottom: 1px solid rgba(151, 174, 199, .08); vertical-align: top; }
+.report-table td small { display: block; color: var(--muted); margin-top: 3px; }
+.conversation-summary-row { cursor: pointer; }
+.conversation-summary-row:hover { background: rgba(126, 109, 255, .07); }
+.conversation-summary-row:focus-visible { outline: 2px solid var(--violet); outline-offset: -2px; }
+.conversation-detail-row > td { padding: 0 12px 18px; }
+
+/* --- billing team: gate scorecard ---------------------------------------- */
+.gate-card {
+  grid-column: 1 / -1;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px 18px;
+  background: rgba(7, 17, 31, .5);
+}
+.gate-row {
+  display: grid;
+  grid-template-columns: minmax(190px, 1.2fr) 130px 110px 1fr;
+  gap: 12px;
+  align-items: baseline;
+  padding: 9px 0;
+  border-top: 1px solid rgba(151, 174, 199, .09);
+  font-size: 12px;
+}
+.gate-row:first-of-type { border-top: 0; }
+.gate-row > span { color: #b6c5d5; }
+.gate-row > b { font-weight: 800; }
+.gate-row > em { font-style: normal; color: var(--muted); font-size: 11px; }
+.gate-row > small { color: #6f849b; font-size: 11px; }
+.gate-row.pass > b { color: var(--green); }
+.gate-row.fail > b { color: var(--danger); }
+.gate-row.unknown > b { color: var(--muted); }
+
+/* --- billing team: heard-state rows -------------------------------------- */
+.heard-row {
+  display: grid;
+  grid-template-columns: 110px 90px 1fr;
+  gap: 10px;
+  align-items: baseline;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  font-size: 12px;
+}
+.heard-row > span { text-transform: uppercase; font-size: 10px; font-weight: 800; letter-spacing: .5px; color: var(--muted); }
+.heard-row.completed > span { color: var(--green); }
+.heard-row.interrupted > span { color: var(--amber); }
+.heard-row.resumed > span { color: #a99fff; }
+.heard-row > em { font-style: normal; color: #8ea2ba; font-size: 11px; }
+
+.latency-list, .transcript-list { display: grid; gap: 8px; }
+
+@media (max-width: 1050px) {
+  .gate-row { grid-template-columns: 1fr 1fr; }
+  .report-table { display: block; overflow-x: auto; }
+}
